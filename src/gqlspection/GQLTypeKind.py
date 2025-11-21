@@ -73,7 +73,8 @@ class GQLTypeKind(object):
         return GQLTypeKind(
             name=current['name'],
             kind=current['kind'],
-            modifiers=modifiers
+            modifiers=modifiers,
+            possible_types=possible_types
         )
 
     # String representation (in the example above: "[BillingPlanV2!]!")
