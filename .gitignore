@@ -14,3 +14,4 @@ Taskfile.y*ml
 .python-version
 _version.py
 build
+.venv
