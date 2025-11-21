@@ -55,7 +55,7 @@ class GQLPossibleTypes(GQLWrapper):
             kind = gqlspection.GQLTypeKind.from_json(json)
             elements = [
                 gqlspection.GQLTypeProxy(type_.name, schema)
-                for type_name in kind.possible_types
+                for type_ in kind.possible_types
             ]
         return elements
 
