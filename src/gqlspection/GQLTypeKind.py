@@ -36,10 +36,18 @@ class GQLTypeKind(object):
             u'ofType': None}}}}
 
     """
-    wrapping_types = ('LIST', 'NON_NULL')
-    non_wrapping_types = ('SCALAR', 'OBJECT', 'INTERFACE', 'UNION', 'ENUM', 'INPUT_OBJECT')
-    leaf_types = ('SCALAR', 'ENUM')
-    builtin_scalars = ('Int', 'Float', 'String', 'Boolean', 'ID')
+
+    wrapping_types = ("LIST", "NON_NULL")
+    non_wrapping_types = (
+        "SCALAR",
+        "OBJECT",
+        "INTERFACE",
+        "UNION",
+        "ENUM",
+        "INPUT_OBJECT",
+    )
+    leaf_types = ("SCALAR", "ENUM")
+    builtin_scalars = ("Int", "Float", "String", "Boolean", "ID")
 
     # in the example above: [NON_NULL, LIST, NON_NULL]
     modifiers = None
@@ -54,36 +62,45 @@ class GQLTypeKind(object):
         self.modifiers = modifiers or []
         self.possible_types = possible_types or []
 
-
     @staticmethod
     def from_json(typedef):
         current = typedef
         modifiers = []
-        possible_types = None
-        while current['kind'] in GQLTypeKind.wrapping_types:
+        possible_types = (
+            [GQLTypeKind.from_json(t) for t in current["possibleTypes"]]
+            if current.get("possibleTypes") is not None
+            else None
+        )
+        while current["kind"] in GQLTypeKind.wrapping_types:
             # iterate through intermediate modifiers (LIST and NON_NULL)
-            modifiers.append(current['kind'])
-            current = current['ofType']
-            possible_types = [GQLTypeKind.from_json(t) for t in  current['possibleTypes']] if  current.get('possibleTypes') is not None else None
-
+            modifiers.append(current["kind"])
+            current = current["ofType"]
+            possible_types = (
+                [GQLTypeKind.from_json(t) for t in current["possibleTypes"]]
+                if current.get("possibleTypes") is not None
+                else None
+            )
         # by this time all modifiers should have been parsed, make sure the result is what we expect
-        if current['kind'] not in GQLTypeKind.non_wrapping_types:
-            raise Exception("GQLTypeKind: Type '%s' is of unknown kind: '%s'" % (typedef['name'], typedef['kind']))
+        if current["kind"] not in GQLTypeKind.non_wrapping_types:
+            raise Exception(
+                "GQLTypeKind: Type '%s' is of unknown kind: '%s'"
+                % (typedef["name"], typedef["kind"])
+            )
 
         return GQLTypeKind(
-            name=current['name'],
-            kind=current['kind'],
+            name=current["name"],
+            kind=current["kind"],
             modifiers=modifiers,
-            possible_types=possible_types
+            possible_types=possible_types,
         )
 
     # String representation (in the example above: "[BillingPlanV2!]!")
     def __repr__(self):
         string_representation = self.name
         for modifier in reversed(self.modifiers):
-            if modifier == 'NON_NULL':
-                string_representation += '!'
-            if modifier == 'LIST':
+            if modifier == "NON_NULL":
+                string_representation += "!"
+            if modifier == "LIST":
                 string_representation = "[%s]" % string_representation
 
         return string_representation

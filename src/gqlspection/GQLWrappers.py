@@ -8,7 +8,7 @@ from .utils import safe_get_list
 
 class GQLWrapFactory(object):
     schema = None
-    json   = None
+    json = None
 
     def __init__(self, schema, json):
         self.schema = schema
@@ -26,6 +26,9 @@ class GQLWrapFactory(object):
     def args(self):
         return GQLArgs(self.schema, self.json)
 
+    def possibleTypes(self):
+        return GQLPossibleTypes(self.schema, self.json)
+
 
 class GQLWrapper(gqlspection.GQLList):
     # This should be overwritten through inheritance
@@ -35,38 +38,52 @@ class GQLWrapper(gqlspection.GQLList):
 
     def __init__(self, schema, json):
         elements = (
-            element for element in self._extract_elements(schema, json)
-            if not element.name.startswith('__')
+            element
+            for element in self._extract_elements(schema, json)
+            if not element.name.startswith("__")
         )
 
         super(GQLWrapper, self).__init__(elements)
+
+
+class GQLPossibleTypes(GQLWrapper):
+    elements = []
+
+    def _extract_elements(self, schema, json):
+        elements = []
+        if "kind" in json:
+            kind = gqlspection.GQLTypeKind.from_json(json)
+            elements = [
+                gqlspection.GQLTypeProxy(type_.name, schema)
+                for type_name in kind.possible_types
+            ]
+        return elements
 
 
 class GQLTypes(GQLWrapper):
     def _extract_elements(self, schema, json):
         elements = []
         scalars = set()
-        for t in safe_get_list(json, 'types'):
+        for t in safe_get_list(json, "types"):
             el = gqlspection.GQLType.from_json(t, schema)
             log.info("Adding new type definition: %s", el.name)
             elements.append(el)
 
-            if el.kind.kind == 'SCALAR':
+            if el.kind.kind == "SCALAR":
                 scalars.add(el.kind.name)
 
         # populate standard types if not present in supplied schema
         for scalar in gqlspection.GQLTypeKind.builtin_scalars:
             log.info("Adding missing default scalar: %s" % scalar)
             if scalar not in scalars:
-                elements.append(gqlspection.GQLType(
-                    name = scalar,
-                    kind = gqlspection.GQLTypeKind(
+                elements.append(
+                    gqlspection.GQLType(
                         name=scalar,
-                        kind='SCALAR'
-                    ),
-                    description="Built-in scalar type.",
-                    schema=schema
-                ))
+                        kind=gqlspection.GQLTypeKind(name=scalar, kind="SCALAR"),
+                        description="Built-in scalar type.",
+                        schema=schema,
+                    )
+                )
 
         return elements
 
@@ -74,7 +91,10 @@ class GQLTypes(GQLWrapper):
 class GQLFields(GQLWrapper):
     @staticmethod
     def _extract_elements(schema, json):
-        return (gqlspection.GQLField.from_json(field, schema) for field in safe_get_list(json, 'fields'))
+        return (
+            gqlspection.GQLField.from_json(field, schema)
+            for field in safe_get_list(json, "fields")
+        )
 
 
 class GQLInterfaces(GQLWrapper):
@@ -90,18 +110,28 @@ class GQLInterfaces(GQLWrapper):
             }
           ],
     """
+
     @staticmethod
     def _extract_elements(schema, json):
-        return (gqlspection.GQLTypeProxy(interface['name'], schema) for interface in safe_get_list(json, 'interfaces'))
+        return (
+            gqlspection.GQLTypeProxy(interface["name"], schema)
+            for interface in safe_get_list(json, "interfaces")
+        )
 
 
 class GQLEnums(GQLWrapper):
     @staticmethod
     def _extract_elements(schema, json):
-        return (gqlspection.GQLEnum.from_json(enum) for enum in safe_get_list(json, 'enumValues'))
+        return (
+            gqlspection.GQLEnum.from_json(enum)
+            for enum in safe_get_list(json, "enumValues")
+        )
 
 
 class GQLArgs(GQLWrapper):
     @staticmethod
     def _extract_elements(schema, json):
-        return (gqlspection.GQLArg.from_json(arg, schema) for arg in safe_get_list(json, 'inputFields'))
+        return (
+            gqlspection.GQLArg.from_json(arg, schema)
+            for arg in safe_get_list(json, "inputFields")
+        )

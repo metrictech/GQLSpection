@@ -6,13 +6,13 @@ from gqlspection.utils import pad_string
 
 
 class GQLQuery(object):
-    type    = None
-    operation = ''
-    name   = ''
-    description = ''
+    type = None
+    operation = ""
+    name = ""
+    description = ""
     fields = None
 
-    def __init__(self, gqltype, operation='query', name='', fields=None):
+    def __init__(self, gqltype, operation="query", name="", fields=None):
         self.fields = fields if fields else self.type.fields
         self.operation = operation
         self.name = name
@@ -32,9 +32,9 @@ class GQLQuery(object):
         If indent = 0, space is preserved, but new lines are removed
         If indent = None, both space and newlines are trimmed.
         """
-        NEWLINE = '\n' if indent else ''
-        PADDING = ' ' * (indent) if indent else ''
-        SPACE   = ' '  if (indent is not None) else ''
+        NEWLINE = "\n" if indent else ""
+        PADDING = " " * (indent) if indent else ""
+        SPACE = " " if (indent is not None) else ""
 
         return SPACE, NEWLINE, PADDING
 
@@ -48,11 +48,13 @@ class GQLQuery(object):
         # whitespace characters collapse when query gets minimized
         SPACE, NEWLINE, PADDING = self._indent(pad)
 
-        first_line = ''.join((
-            self.operation,
-            (' ' + self.name) if self.name else '',
-            SPACE + '{' + NEWLINE
-        ))
+        first_line = "".join(
+            (
+                self.operation,
+                (" " + self.name) if self.name else "",
+                SPACE + "{" + NEWLINE,
+            )
+        )
 
         middle_lines = ""
         for field in self.fields:
@@ -60,13 +62,15 @@ class GQLQuery(object):
             middle_lines += NEWLINE.join(subquery.str(pad).splitlines()) + NEWLINE
         middle_lines = pad_string(middle_lines, pad)
 
-        last_line = '}' if not self.type.kind.is_final else ""
+        last_line = "}" if not self.type.kind.is_final else ""
 
         if pad:
             if self.description:
-                description_line = gqlspection.utils.format_comment(self.description) + NEWLINE
+                description_line = (
+                    gqlspection.utils.format_comment(self.description) + NEWLINE
+                )
             else:
-                description_line = ''
+                description_line = ""
             result = description_line + first_line + middle_lines + last_line
         else:
             result = first_line + middle_lines + last_line

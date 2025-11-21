@@ -6,7 +6,7 @@ import gqlspection
 
 
 class GQLTypeProxy(object):
-    name = ''
+    name = ""
     schema = None
     _upstream = None
     max_depth = 4
@@ -27,8 +27,12 @@ class GQLTypeProxy(object):
         else:
             if log.is_debug:
                 import pdb
+
                 pdb.set_trace()
-                log.debug("Found an unknown type: '%s'. At this time following types are present in schema:", self.name)
+                log.debug(
+                    "Found an unknown type: '%s'. At this time following types are present in schema:",
+                    self.name,
+                )
                 for t in self.schema.types:
                     log.debug("    %s(%s) [%s]" % (type(t.name), t.name, t.kind.kind))
 
@@ -40,7 +44,7 @@ class GQLTypeProxy(object):
         return getattr(self, item)
 
     def __getattr__(self, item):
-        proxy = getattr(self.upstream, '_proxy_getattr', None)
+        proxy = getattr(self.upstream, "_proxy_getattr", None)
         if proxy:
             # nested object detected, pass execution to proxy
             return proxy(item, 0)

@@ -59,7 +59,7 @@ def minimize_query(query):
         in_string = in_single_string or in_double_string
 
         # Set the escaped flag, if the current character is a backslash
-        escaped = (c == "\\")
+        escaped = c == "\\"
 
     # Return the minimized query
     return minimized
@@ -67,7 +67,7 @@ def minimize_query(query):
 
 def format_comment(string, max_length=60):
     # Split the string into lines
-    lines = string.split('\n')
+    lines = string.split("\n")
 
     # Initialize a list to store the formatted lines
     formatted_lines = []
@@ -78,7 +78,7 @@ def format_comment(string, max_length=60):
         words = line.split()
 
         # Initialize a variable to keep track of the current line
-        current_line = ''
+        current_line = ""
 
         # Iterate through the words
         for word in words:
@@ -86,20 +86,20 @@ def format_comment(string, max_length=60):
             # append the current line to the list of formatted lines and start a new line
             if len(current_line) + len(word) > max_length:
                 formatted_lines.append(current_line)
-                current_line = ''
+                current_line = ""
 
             # If the current line is empty, add the word to the line
             # Otherwise, add a space and the word to the line
-            if current_line == '':
+            if current_line == "":
                 current_line = word
             else:
-                current_line += ' ' + word
+                current_line += " " + word
 
         # Add the remaining line to the list of formatted lines
         formatted_lines.append(current_line)
 
     # Return the formatted comment
-    return '\n'.join(['# ' + line for line in formatted_lines])
+    return "\n".join(["# " + line for line in formatted_lines])
 
 
 def safe_get_list(dictionary, name):
@@ -118,10 +118,10 @@ def pad_string(string, n=4):
         return string
 
     if isinstance(string, str):
-        ends_with_newline = string[-1] == '\n'
-        return '\n'.join((
-            (' ' * n + line) for line in string.splitlines()
-        )) + ('\n' if ends_with_newline else '')
+        ends_with_newline = string[-1] == "\n"
+        return "\n".join(((" " * n + line) for line in string.splitlines())) + (
+            "\n" if ends_with_newline else ""
+        )
     else:
         log.debug("Asked to pad the following non-string with %s spaces: %s", n, string)
         raise Exception("Expected a string to pad, received %s", type(string))

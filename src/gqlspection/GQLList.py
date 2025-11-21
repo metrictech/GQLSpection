@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from builtins import str
+
 try:
     from collections.abc import Mapping
 except ImportError:
@@ -18,13 +19,12 @@ class GQLList(Mapping):
       - Allows selecting elements both by index (gqllist[3]) and by the 'name' (gqllist['some-name'])
       - GQLList is meant for read-only data, so there is no way to add, update, delete elements
     """
+
     _elements = None
 
     def __init__(self, elements):
         sorted_elements = sorted(elements, key=lambda i: i.name)
-        self._elements = OrderedDict(
-            ((i.name, i) for i in sorted_elements)
-        )
+        self._elements = OrderedDict(((i.name, i) for i in sorted_elements))
 
     def __getitem__(self, item):
         if isinstance(item, str):
@@ -38,16 +38,16 @@ class GQLList(Mapping):
         return (self._elements[el] for el in self._elements)
 
     def __str__(self):
-        return '\n'.join((str(el) for el in self._elements))
+        return "\n".join((str(el) for el in self._elements))
 
     def __repr__(self):
         first_line = "GQLList[{inner_type}]".format(
             inner_type=str(type(self._elements[0]))
         )
 
-        other_lines = ['    ' + repr(el) for el in self._elements]
+        other_lines = ["    " + repr(el) for el in self._elements]
 
-        return '\n'.join([first_line] + other_lines)
+        return "\n".join([first_line] + other_lines)
 
     def __bool__(self):
         return not not len(self._elements)

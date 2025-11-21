@@ -110,6 +110,7 @@ fragment TypeRef on __Type {
 def get_introspection_query(depth=4, minimize=True):
     """Construct the introspection query and optionally minimize it."""
     from gqlspection.utils import minimize_query
+
     if minimize:
         return minimize_query(__documented_introspection_query)
     else:

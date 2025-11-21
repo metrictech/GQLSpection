@@ -5,13 +5,13 @@ import gqlspection
 
 
 class GQLArg(object):
-    name         = ''
-    kind         = None
-    description  = ''
-    type         = None
-    default_value = ''
+    name = ""
+    kind = None
+    description = ""
+    type = None
+    default_value = ""
 
-    def __init__(self, name, kind, type_, description='', default_value=''):
+    def __init__(self, name, kind, type_, description="", default_value=""):
         self.name = name
         self.kind = kind
         self.type = type_
@@ -20,18 +20,15 @@ class GQLArg(object):
 
     @staticmethod
     def from_json(json, schema):
-        kind = gqlspection.GQLTypeKind.from_json(json['type'])
+        kind = gqlspection.GQLTypeKind.from_json(json["type"])
 
         return GQLArg(
-            name=json['name'],
+            name=json["name"],
             kind=kind,
             type_=gqlspection.GQLTypeProxy(kind.name, schema),
-            description=json.get('description', ''),
-            default_value=json.get('default_value', '')
+            description=json.get("description", ""),
+            default_value=json.get("default_value", ""),
         )
 
     def __repr__(self):
-        return '{name}: {type}'.format(
-            name = self.name,
-            type = str(self.kind)
-        )
+        return "{name}: {type}".format(name=self.name, type=str(self.kind))
