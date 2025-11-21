@@ -48,19 +48,23 @@ class GQLTypeKind(object):
     # in the example above: 'BillingPlanV2'
     name = None
 
-    def __init__(self, name, kind, modifiers=None):
+    def __init__(self, name, kind, modifiers=None, possible_types=None):
         self.name = name
         self.kind = kind
         self.modifiers = modifiers or []
+        self.possible_types = possible_types or []
+
 
     @staticmethod
     def from_json(typedef):
         current = typedef
         modifiers = []
+        possible_types = None
         while current['kind'] in GQLTypeKind.wrapping_types:
             # iterate through intermediate modifiers (LIST and NON_NULL)
             modifiers.append(current['kind'])
             current = current['ofType']
+            possible_types = [GQLTypeKind.from_json(t) for t in  current['possibleTypes']] if  current.get('possibleTypes') is not None else None
 
         # by this time all modifiers should have been parsed, make sure the result is what we expect
         if current['kind'] not in GQLTypeKind.non_wrapping_types:
@@ -69,7 +73,8 @@ class GQLTypeKind(object):
         return GQLTypeKind(
             name=current['name'],
             kind=current['kind'],
-            modifiers=modifiers
+            modifiers=modifiers,
+            possible_types=possible_types
         )
 
     # String representation (in the example above: "[BillingPlanV2!]!")
