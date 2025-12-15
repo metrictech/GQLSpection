@@ -103,7 +103,9 @@ class GQLSchema(object):
             headers=headers,
         ).json()
         if "errors" in result:
-            raise Exception([error["message"] for error in result["errors"]])
+            raise Exception([(
+                    error["message"] if isinstance(error, dict) else str(error)
+                ) for error in result["errors"]])
 
         return result
 
