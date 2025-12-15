@@ -1,8 +1,12 @@
 # coding: utf-8
 from __future__ import unicode_literals
+
 from builtins import object, str
-from gqlspection import log
+from typing import Sequence
+
 import gqlspection
+from gqlspection import log
+from request import Response
 
 
 class GQLSchema(object):
@@ -97,15 +101,22 @@ class GQLSchema(object):
         if extra_headers:
             headers.update(extra_headers)
 
-        result = requests.post(
+        response: Response = requests.post(
             url,
             json={"query": get_introspection_query(minimize=minimize)},
             headers=headers,
-        ).json()
+        )
+
+        result = response.json()
         if "errors" in result:
-            raise Exception([(
-                    error["message"] if isinstance(error, dict) else str(error)
-                ) for error in result["errors"]])
+            raise Exception({
+                "status_code": response.status_code,
+                "messages": (
+                    [error["message"] for error in result["errors"]]
+                    if isinstance(Sequence, result["errors"])
+                    else str(result["errors"])
+                )
+            })
 
         return result
 
