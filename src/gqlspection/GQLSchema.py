@@ -8,6 +8,9 @@ import gqlspection
 from gqlspection import log
 from requests import Response
 
+class GQLSchemaException(Exception):
+    pass
+
 
 class GQLSchema(object):
     types = None
@@ -109,12 +112,13 @@ class GQLSchema(object):
 
         result = response.json()
         if "errors" in result:
-            raise Exception({
+            raise GQLSchemaException({
                 "status_code": response.status_code,
                 "messages": (
-                    [error["message"] for error in result["errors"]]
-                    if isinstance(Sequence, result["errors"])
-                    else str(result["errors"])
+                    result["errors"]
+                    if isinstance(result["errors"], str)
+                    else
+                    [(error["message"] if isinstance(error, dict) else error) for error in result["errors"]]
                 )
             })
 
