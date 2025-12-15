@@ -6,7 +6,7 @@ from typing import Sequence
 
 import gqlspection
 from gqlspection import log
-from request import Response
+from requests import Response
 
 
 class GQLSchema(object):
