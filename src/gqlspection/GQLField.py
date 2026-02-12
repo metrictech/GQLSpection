@@ -15,7 +15,7 @@ class GQLField(object):
     is_deprecated = False
     deprecation_reason = ""
     schema = None
-    requiredAccess = None
+    required_access = None
 
     def __init__(
         self,
