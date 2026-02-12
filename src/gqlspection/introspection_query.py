@@ -22,10 +22,12 @@ query IntrospectionQuery {
             # 'kind' is enum with values: SCALAR, OBJECT, INTERFACE, UNION, ENUM, INPUT_OBJECT, LIST, NON_NULL
             kind
             description
+            requiredAccess
             # The following are only present for OBJECT and INTERFACE, otherwise null:
             fields(includeDeprecated: true) {
                 name
                 description
+                requiredAccess
                 args(includeDeprecated: true) {
                     ... InputValue
                 }
