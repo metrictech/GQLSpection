@@ -14,6 +14,7 @@ class GQLType(object):
     enums = None
     args = None
     url = ""
+    required_access = None
 
     def __init__(
         self,
@@ -27,6 +28,7 @@ class GQLType(object):
         args=None,
         possible_types=None,
         url="",
+        required_access = None
     ):
         self.name = name
         self.kind = kind
@@ -40,6 +42,7 @@ class GQLType(object):
         self.interfaces = interfaces or gqlspection.GQLInterfaces(schema, {})
         self.enums = enums or gqlspection.GQLEnums(schema, {})
         self.possible_types = possible_types or gqlspection.GQLPossibleTypes(schema, {})
+        self.required_access = required_access
 
     @staticmethod
     def from_json(json, schema):
@@ -55,6 +58,7 @@ class GQLType(object):
             args=wrap.args(),
             possible_types=wrap.possibleTypes(),
             url=json.get("specifiedByURL", ""),
+            required_access = json["requiredAccess"]
         )
 
     def __repr__(self):

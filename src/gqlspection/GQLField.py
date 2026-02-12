@@ -15,6 +15,7 @@ class GQLField(object):
     is_deprecated = False
     deprecation_reason = ""
     schema = None
+    requiredAccess = None
 
     def __init__(
         self,
@@ -25,6 +26,7 @@ class GQLField(object):
         args=None,
         is_deprecated=False,
         deprecation_reason="",
+            required_access=None
     ):
         self.name = name
         self.kind = kind
@@ -34,6 +36,7 @@ class GQLField(object):
         self.args = args or gqlspection.GQLArgs(schema, {})
         self.is_deprecated = is_deprecated
         self.deprecation_reason = deprecation_reason
+        self.required_access=required_access
 
     @staticmethod
     def _wrap_args(json, schema):
@@ -52,4 +55,5 @@ class GQLField(object):
             args=GQLField._wrap_args(field, schema),
             is_deprecated=field.get("isDeprecated", False),
             deprecation_reason=field.get("deprecationReason", ""),
+            required_access=field.get("requiredAccess", None),
         )
